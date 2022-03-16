@@ -20,7 +20,7 @@ const Pool = () => {
       if (active) {
         const contract = new Contract(
           poolAddress,
-          poolContract,
+          poolContract.abi,
           library.getSigner()
         );
 
@@ -39,7 +39,7 @@ const Pool = () => {
       if (active) {
         const contract = new Contract(
           poolAddress,
-          poolContract,
+          poolContract.abi,
           library.getSigner()
         );
 
@@ -59,7 +59,7 @@ const Pool = () => {
       try {
         const contract = new Contract(
           poolAddress,
-          poolContract,
+          poolContract.abi,
           library.getSigner()
         );
         const claimdata = await contract.claim();
@@ -73,12 +73,12 @@ const Pool = () => {
   };
   const withdraw = async () => {
     if (active) {
-      const v = prompt('please enter amount to deposit');
+      const v = prompt('please enter amount to withdraw');
 
       try {
         const contract = new Contract(
           poolAddress,
-          poolContract,
+          poolContract.abi,
           library.getSigner()
         );
         const claimdata = await contract.withdraw(parseEther(v));
@@ -92,14 +92,15 @@ const Pool = () => {
 
   const deposit = async () => {
     if (active) {
-      const v = prompt('please enter amount to Withdraw');
+      const v = prompt('please enter amount to deposit');
       try {
         const contract = new Contract(
           poolAddress,
-          poolContract,
+          poolContract.abi,
           library.getSigner()
         );
         const claimdata = await contract.deposit(parseEther(v));
+
         await claimdata.wait();
       } catch (error) {
         console.log(error);

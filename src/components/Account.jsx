@@ -1,14 +1,20 @@
 import React from 'react';
 import { useWeb3React } from '@web3-react/core';
 import { injected } from '../connector';
-import { Alert, Box, Button, Center } from '@chakra-ui/react';
+import { Alert, Box, Button, Center, Heading } from '@chakra-ui/react';
 
 const Account = () => {
   const { active, account, library, connector, activate, deactivate, chainId } =
     useWeb3React();
 
   return (
-    <Center alignContent={'center'}>
+    <Center
+      alignContent={'center'}
+      flexDirection='column'
+      gap={'3'}
+      justifyContent='center'
+    >
+      {account && <Heading size={'md'}>Account</Heading>}
       <Button
         width={'250px'}
         height={'60px'}
