@@ -14,7 +14,9 @@ const Pool = () => {
   const [balance, setBalance] = useState('');
   const [earnedBalance, setEarnedBalance] = useState('');
   const [loadingClaim, setLoadingCaim] = useState();
-
+  const [loadingDeposit, setLoadingDeposit] = useState();
+  const [loadingWithdraw, setLoadingWithdraw] = useState();
+  const [ethBalance, setEthBalance] = useState('');
   async function fetchBalance() {
     try {
       if (active) {
@@ -26,13 +28,24 @@ const Pool = () => {
 
         const totalShares = await contract.contractBalance();
         console.log('totalShares ', totalShares.toString());
-        const newTotalShares = parseFloat(formatEther(totalShares)).toFixed(5);
+        const newTotalShares = parseFloat(formatEther(totalShares)).toFixed(4);
         setBalance(newTotalShares);
       }
     } catch (error) {
       console.log(error);
     }
   }
+  const getBalance = async () => {
+    if (active) {
+      try {
+        const balance = await library.getBalance(account);
+        const newbalance = parseFloat(formatEther(balance)).toFixed(4);
+        setEthBalance(newbalance);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
 
   async function getEarnedBalance() {
     try {
@@ -73,6 +86,7 @@ const Pool = () => {
   };
   const withdraw = async () => {
     if (active) {
+      setLoadingWithdraw(true);
       const v = prompt('please enter amount to withdraw');
 
       try {
@@ -87,12 +101,15 @@ const Pool = () => {
       } catch (error) {
         console.log(error);
       }
+      setLoadingWithdraw(false);
     }
   };
 
   const deposit = async () => {
     if (active) {
       const v = prompt('please enter amount to deposit');
+      setLoadingDeposit(true);
+
       try {
         const contract = new Contract(
           poolAddress,
@@ -105,12 +122,14 @@ const Pool = () => {
       } catch (error) {
         console.log(error);
       }
+      setLoadingDeposit(false);
     }
   };
 
   useEffect(() => {
     fetchBalance();
     getEarnedBalance();
+    getBalance();
   }, [account, chainId]);
 
   return (
@@ -119,12 +138,15 @@ const Pool = () => {
       {account ? (
         <Flex direction={'column'} alignItems='center' margin={'20'} gap='2'>
           <Heading>Pool Farming Details</Heading>
-          <Heading size={'md'}>{` Total Balance :${balance}`}</Heading>
+          <Heading size={'md'}>{` Total ETH :${ethBalance}`}</Heading>
+          <Heading size={'md'}>{` Total Pool Balance :${balance}`}</Heading>
           <Heading
             size={'md'}
           >{` Total Earned Balance :${earnedBalance}`}</Heading>
           <Flex direction={'column'} alignItems='center' margin={'5'} gap='2'>
             <Button
+              loadingText={'please wait'}
+              isLoading={loadingDeposit}
               onClick={deposit}
               width={'160px'}
               variant={'solid'}
@@ -134,6 +156,8 @@ const Pool = () => {
               Stake
             </Button>
             <Button
+              loadingText={'please wait'}
+              isLoading={loadingWithdraw}
               onClick={withdraw}
               width={'160px'}
               variant={'solid'}
